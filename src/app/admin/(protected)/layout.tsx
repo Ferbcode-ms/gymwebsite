@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { connection } from "next/server";
 import {
   LayoutDashboard,
@@ -14,7 +13,7 @@ import {
   LogOut,
   ExternalLink,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { verifyAdminAuth } from "@/lib/cms/auth";
 import { logoutAction } from "@/app/admin/login/actions";
 
 export const metadata = {
@@ -28,32 +27,9 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   await connection();
-  // Check auth session
-  let isAuthenticated = false;
-  const cookieStore = await cookies();
+  const auth = await verifyAdminAuth();
 
-  // 1. Check demo cookie
-  if (cookieStore.get("admin_demo_session")?.value === "true") {
-    isAuthenticated = true;
-  }
-
-  // 2. Check Supabase session if configured
-  if (!isAuthenticated && process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    try {
-      const supabase = await createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        isAuthenticated = true;
-      }
-    } catch {
-      // Continue to check
-    }
-  }
-
-  // If not authenticated, redirect to login
-  if (!isAuthenticated) {
+  if (!auth.authorized) {
     redirect("/admin/login");
   }
 

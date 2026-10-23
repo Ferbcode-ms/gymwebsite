@@ -1,76 +1,85 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import {
+  checkRateLimit,
+  recordFailedLogin,
+  resetRateLimit,
+} from "@/lib/cms/auth";
+
+async function getClientIp(): Promise<string> {
+  try {
+    const headerStore = await headers();
+    const forwarded = headerStore.get("x-forwarded-for");
+    if (forwarded) {
+      return forwarded.split(",")[0].trim();
+    }
+    return (
+      headerStore.get("cf-connecting-ip") ||
+      headerStore.get("x-real-ip") ||
+      "127.0.0.1"
+    );
+  } catch {
+    return "127.0.0.1";
+  }
+}
 
 export async function loginAction(formData: FormData) {
-  const email = formData.get("email") as string;
+  const clientIp = await getClientIp();
+
+  // 1. Enforce rate limiting per client IP to prevent brute-force attacks
+  const rateLimit = checkRateLimit(clientIp);
+  if (!rateLimit.allowed) {
+    return {
+      error: `Too many failed attempts. Account locked for security. Please try again in ${rateLimit.retryAfterSeconds} seconds.`,
+    };
+  }
+
+  const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
 
   if (!email || !password) {
     return { error: "Please provide both email and password" };
   }
 
-  // 1. If Supabase URL and Key are configured, authenticate via Supabase Auth
-  const hasSupabaseConfig =
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  // 2. Authenticate purely via Supabase Auth
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (hasSupabaseConfig) {
-    try {
-      const supabase = await createClient();
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        return { error: error.message };
+    if (error) {
+      const attemptResult = recordFailedLogin(clientIp);
+      if (attemptResult.locked) {
+        return {
+          error: "Maximum failed attempts reached. Access temporarily locked for 15 minutes.",
+        };
       }
-
-      redirect("/admin");
-    } catch (err: any) {
-      if (err?.digest?.includes("NEXT_REDIRECT")) throw err;
-      return { error: err.message || "Failed to authenticate with Supabase" };
-    }
-  } else {
-    // 2. Demo fallback authentication if Supabase keys are not set up yet
-    if (
-      (email === "admin@apexfitness.com" || email === "admin@apex.com") &&
-      password === "admin123"
-    ) {
-      const cookieStore = await cookies();
-      cookieStore.set("admin_demo_session", "true", {
-        path: "/",
-        httpOnly: true,
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      });
-      redirect("/admin");
+      return {
+        error: `${error.message} (${attemptResult.remainingAttempts} attempts remaining)`,
+      };
     }
 
-    return {
-      error:
-        "Invalid credentials. Use admin@apexfitness.com / admin123 or sign in with your Supabase auth credentials.",
-    };
+    // Success: reset rate limit counter and redirect to admin
+    resetRateLimit(clientIp);
+    redirect("/admin");
+  } catch (err: any) {
+    if (err?.digest?.includes("NEXT_REDIRECT")) throw err;
+    return { error: err.message || "Failed to authenticate with Supabase Auth" };
   }
 }
 
 export async function logoutAction() {
-  const hasSupabaseConfig =
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
-  if (hasSupabaseConfig) {
-    try {
-      const supabase = await createClient();
-      await supabase.auth.signOut();
-    } catch (e) {
-      console.warn("Supabase signout notice:", e);
-    }
+  try {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+  } catch {
+    // Ignore sign-out network errors
   }
 
-  const cookieStore = await cookies();
-  cookieStore.delete("admin_demo_session");
   redirect("/admin/login");
 }

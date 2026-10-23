@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Lock, Mail, ShieldAlert, Sparkles } from "lucide-react";
+import { ArrowLeft, Lock, Mail, ShieldAlert, ShieldCheck } from "lucide-react";
 import { loginAction } from "./actions";
 
 export default function AdminLoginPage() {
@@ -23,15 +23,6 @@ export default function AdminLoginPage() {
     }
   };
 
-  const fillDemoCredentials = () => {
-    const emailInput = document.getElementById("email") as HTMLInputElement;
-    const passwordInput = document.getElementById("password") as HTMLInputElement;
-    if (emailInput && passwordInput) {
-      emailInput.value = "admin@apexfitness.com";
-      passwordInput.value = "admin123";
-    }
-  };
-
   return (
     <div className="min-h-screen w-full bg-[var(--black-ish)] text-[var(--white-ish)] flex flex-col justify-between p-6 sm:p-12 relative overflow-hidden select-none">
       {/* Background Ambient Glow */}
@@ -47,7 +38,7 @@ export default function AdminLoginPage() {
           Back to Website
         </Link>
         <span className="font-mono text-xs uppercase tracking-widest text-[var(--green-yellow)] px-3 py-1 rounded-full border border-[var(--green-yellow)]/30 bg-[var(--green-yellow)]/10">
-          CMS Portal
+          Secure CMS Portal
         </span>
       </div>
 
@@ -58,7 +49,7 @@ export default function AdminLoginPage() {
             Apex CMS
           </h1>
           <p className="text-sm text-[var(--white-ish)]/60 font-sans">
-            Sign in to manage website content, services & images.
+            Sign in with your verified administrator credentials.
           </p>
         </div>
 
@@ -69,7 +60,10 @@ export default function AdminLoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5 bg-white/[0.03] backdrop-blur-md p-8 rounded-3xl border border-white/10 shadow-2xl">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 bg-white/[0.03] backdrop-blur-md p-8 rounded-3xl border border-white/10 shadow-2xl"
+        >
           <div>
             <label
               htmlFor="email"
@@ -84,7 +78,7 @@ export default function AdminLoginPage() {
                 name="email"
                 type="email"
                 required
-                defaultValue="admin@apexfitness.com"
+                autoComplete="username"
                 placeholder="admin@apexfitness.com"
                 className="w-full bg-black/40 border border-white/15 focus:border-[var(--green-yellow)] rounded-xl py-3 pl-11 pr-4 text-sm text-[var(--white-ish)] placeholder-white/30 focus:outline-none transition-colors"
               />
@@ -105,8 +99,8 @@ export default function AdminLoginPage() {
                 name="password"
                 type="password"
                 required
-                defaultValue="admin123"
-                placeholder="••••••••"
+                autoComplete="current-password"
+                placeholder="••••••••••••"
                 className="w-full bg-black/40 border border-white/15 focus:border-[var(--green-yellow)] rounded-xl py-3 pl-11 pr-4 text-sm text-[var(--white-ish)] placeholder-white/30 focus:outline-none transition-colors"
               />
             </div>
@@ -115,28 +109,24 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full skulpt-btn-pill py-3 text-base font-bold text-[var(--black-ish)] flex items-center justify-center gap-2 cursor-pointer mt-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="w-full skulpt-btn-pill py-3 text-base font-bold text-[var(--black-ish)] flex items-center justify-center gap-2 cursor-pointer mt-2 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Authenticating..." : "Sign In to Admin"}
           </button>
 
-          {/* Quick Demo Credentials Button */}
-          <div className="pt-2 border-t border-white/10 text-center">
-            <button
-              type="button"
-              onClick={fillDemoCredentials}
-              className="inline-flex items-center gap-1.5 text-xs text-[var(--green-yellow)]/90 hover:text-[var(--green-yellow)] hover:underline cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              Autofill demo login credentials
-            </button>
+          {/* Security notice badge */}
+          <div className="pt-3 border-t border-white/10 text-center">
+            <div className="inline-flex items-center gap-1.5 text-xs text-white/50">
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--green-yellow)]" />
+              <span>Supabase Auth Protected • Rate-Limiting Active</span>
+            </div>
           </div>
         </form>
       </div>
 
       {/* Footer info */}
       <div className="text-center text-xs text-white/40 relative z-10 max-w-md mx-auto">
-        <span>Powered by Supabase Auth & Cloudinary Storage</span>
+        <span>Powered by Supabase Auth • Apex Fitness</span>
       </div>
     </div>
   );
