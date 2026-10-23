@@ -1,0 +1,55 @@
+.section.is-services{justify-content:center;padding-bottom:16em}
+
+.heading-display{color:var(--black-ish);text-transform:uppercase;margin-top:0;margin-bottom:0;font-family:Pilat Condensed,sans-serif;font-size:8em;font-weight:800;line-height:1}
+
+.heading-display.hero{margin-bottom:0;font-size:10em;transform:translate(0)}
+
+.heading-display.is-flip{color:var(--white-ish)}
+
+.heading-2.is-rel{z-index:1;position:relative}
+
+.heading-2.is-rel.is-flip{display:none}
+
+.noverflow{width:100%;max-width:100%;height:100%;display:block;position:relative;overflow:hidden}
+
+.num-txt-lg{z-index:1;color:var(--white);font-family:Pilat Condensed,sans-serif;font-size:10em;font-weight:800;line-height:1.5;position:absolute;inset:auto 2% -10% auto}
+
+.span-txt{font-family:Pilat Condensed,sans-serif;font-size:2em;font-weight:800;display:inline-block}
+
+.num-txt{z-index:2;white-space:nowrap;font-family:Pilat Condensed,sans-serif;font-size:2em;font-weight:800;line-height:1;position:static}
+
+.border-line-btm{z-index:1;background-color:var(--green-yellow);width:100%;height:3px;position:absolute;inset:auto 0% 0%}
+
+.list-img-parent{z-index:10;width:20vw;height:45vh;padding:2.5em;position:absolute;right:10%;overflow:hidden}
+
+.service-parent{cursor:pointer;flex-direction:row;justify-content:space-between;align-items:center;width:100%;padding-top:1em;padding-bottom:1em;display:flex;position:relative}
+
+.num-txt-ap{z-index:2;color:var(--black-ish);text-transform:uppercase;white-space:nowrap;font-family:Pilat Condensed,sans-serif;font-size:2em;font-weight:800;line-height:1;position:absolute;inset:0% auto auto 0%}
+
+.service-img{width:100%;height:100%;position:absolute;inset:0%}
+
+.service-txt{flex:none}
+
+.black-overlay{background-color:#20202033;display:block;position:absolute;inset:0%}
+
+.service-link{z-index:15;min-width:100%;padding-top:3em;padding-bottom:3em;position:relative}
+
+.heading-display{font-size:6em}
+
+.heading-display.hero{font-size:8em}
+
+.heading-display.is-flip{font-size:6em}
+
+.list-img-parent{width:32vw;right:21%}
+
+.heading-display{font-size:4em}
+
+.heading-display.hero{font-size:6em}
+
+.heading-display.is-flip{font-size:4em}
+
+.span-txt.one,.span-txt.four,.span-txt.two,.span-txt.three,.span-txt.one,.span-txt.four,.span-txt.two,.span-txt.three{font-size:1.5em}
+
+.list-img-parent{display:none}
+
+.heading-display.hero{font-size:5em}

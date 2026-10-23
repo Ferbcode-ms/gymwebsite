@@ -1,0 +1,13 @@
+<svg width="220" height="48" viewBox="0 0 220 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Athletic Peak / Chevron Icon -->
+  <path d="M4 36L18 10L32 36H24L18 24L12 36H4Z" fill="#111111" />
+  <path d="M18 17L22 25H14L18 17Z" fill="#84CC16" />
+  
+  <!-- APEX Typography -->
+  <text x="42" y="32" font-family="'Barlow Condensed', 'Impact', sans-serif" font-weight="900" font-size="34" letter-spacing="0.1em" fill="#111111">
+    APEX
+  </text>
+  <text x="134" y="32" font-family="'Barlow Condensed', 'Impact', sans-serif" font-weight="700" font-size="20" letter-spacing="0.22em" fill="#65A30D">
+    FITNESS
+  </text>
+</svg>
