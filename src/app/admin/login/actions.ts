@@ -44,7 +44,14 @@ export async function loginAction(formData: FormData) {
     return { error: "Please provide both email and password" };
   }
 
-  // 2. Authenticate purely via Supabase Auth
+  // 2. Validate Supabase environment configuration
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return {
+      error: "Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY) are missing in Cloudflare settings.",
+    };
+  }
+
+  // 3. Authenticate purely via Supabase Auth
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithPassword({
